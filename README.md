@@ -11,7 +11,7 @@ How to
 - cd /mingw
 - gen --install=1
 - see your local32/local64 & global32/global64 directory
-
+- you will get ffmpeg .dll library, if you need .a then look at _install/script/video_git_ffmpeg
 More
 -------- 
 - open file gen to see how to use step by step
