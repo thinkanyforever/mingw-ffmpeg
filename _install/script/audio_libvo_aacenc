@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libvo_aacenc(){
+    local pitem_dir=vo-aacenc-0.1.3
+    local pitem_file=vo-aacenc-0.1.3.tar.gz
+    local pitem_url="http://downloads.sourceforge.net/project/opencore-amr/vo-aacenc/vo-aacenc-0.1.3.tar.gz"
+    local pitem_target=.libs/libvo-aacenc.a
+    local pitem_install=$LOCALDIR/lib/libvo-aacenc.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --enable-shared=no
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

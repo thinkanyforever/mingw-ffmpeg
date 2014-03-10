@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libopus_tools(){
+    local pitem_dir=opus-tools-0.1.7
+    local pitem_file=opus-tools-0.1.7.tar.gz
+    local pitem_url="https://ftp.mozilla.org/pub/mozilla.org/opus/opus-tools-0.1.7.tar.gz"
+    local pitem_target=opusenc.exe
+    local pitem_install=$LOCALDIR/bin/opusenc.exe
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR LDFLAGS="$LDFLAGS -static -static-libgcc -static-libstdc++"
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

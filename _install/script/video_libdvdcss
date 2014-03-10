@@ -1,0 +1,14 @@
+#!/bin/bash
+
+video_libdvdcss(){
+    local pitem_dir=libdvdcss-1.2.13
+    local pitem_file=libdvdcss-1.2.13.tar.bz2
+    local pitem_url="http://download.videolan.org/pub/videolan/libdvdcss/1.2.13/libdvdcss-1.2.13.tar.bz2"
+    local pitem_target=.libs/libdvdcss.a
+    local pitem_install=$LOCALDIR/lib/libdvdcss.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

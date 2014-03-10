@@ -1,0 +1,15 @@
+#!/bin/bash
+
+video_libmodplug(){
+    local pitem_dir=libmodplug-0.8.8.4
+    local pitem_file=libmodplug-0.8.8.4.tar.gz
+    local pitem_url="http://sourceforge.net/projects/modplug-xmms/files/libmodplug/0.8.8.4/libmodplug-0.8.8.4.tar.gz/download"
+    local pitem_target=src/.libs/libmodplug.a
+    local pitem_install=$LOCALDIR/lib/libmodplug.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared
+        sed -i 's/-lmodplug.*/-lmodplug -lstdc++/' $LOCALDIR/lib/pkgconfig/libmodplug.pc
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

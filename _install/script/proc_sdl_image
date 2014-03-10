@@ -1,0 +1,19 @@
+#!/bin/bash
+
+proc_sdl_image(){
+    local pitem_dir=SDL_image-1.2.12
+    local pitem_file=SDL_image-1.2.12.tar.gz
+    local pitem_url="http://www.libsdl.org/projects/SDL_image/release/SDL_image-1.2.12.tar.gz"
+    local pitem_target=.libs/libSDL_image.a
+    local pitem_install=$GLOBALDIR/lib/libSDL_image.a
+
+    original_cflags=$CFLAGS
+    export CFLAGS="$original_cflags -DDECLSPEC="
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-shared=no
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+
+    export CFLAGS=$original_cflags
+}

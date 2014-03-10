@@ -1,0 +1,30 @@
+#!/bin/bash
+
+video_svn_mp4box(){
+    local pitem_dir=mp4box.svn
+    local pitem_file=mp4box.svn
+    local pitem_url="svn://svn.code.sf.net/p/gpac/code/trunk/gpac"
+    local pitem_target=bin/gcc/MP4Box.exe
+    local pitem_install=$LOCALDIR/bin/MP4Box.exe
+    
+    clean_proc(){
+        cd src
+        make clean
+        cd ../applications/mp4box
+        make clean
+    }
+    config_proc(){
+        ./configure --host=$targetHost --static-mp4box --enable-static-bin --extra-libs="-lws2_32 -lwinmm -lz -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64" --use-ffmpeg=no --use-png=no
+        cp config.h include/gpac/internal
+    }
+    make_proc(){
+        cd src
+        do_make_proc
+        cd ../applications/mp4box
+        do_make_proc
+    }
+    install_proc(){
+        cp bin/gcc/MP4Box.exe $LOCALDIR/bin
+    }
+    do_proc_default clean_proc config_proc make_proc install_proc
+}

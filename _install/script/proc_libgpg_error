@@ -1,0 +1,15 @@
+#!/bin/bash
+
+proc_libgpg_error(){
+    local pitem_dir=libgpg-error-1.12
+    local pitem_file=libgpg-error-1.12.tar.bz2
+    local pitem_url="ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-1.12.tar.bz2"
+    local pitem_target=src/.libs/libgpg-error.a
+    local pitem_install=$GLOBALDIR/lib/libgpg-error.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --disable-shared --with-gnu-ld
+        sed -i 's/iconv --silent/iconv -s/g' potomo
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

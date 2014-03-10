@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proc_dlfcn(){
+    local pitem_dir=dlfcn-win32-r19
+    local pitem_file=dlfcn-win32-r19.tar.bz2
+    local pitem_url="http://dlfcn-win32.googlecode.com/files/dlfcn-win32-r19.tar.bz2"
+    local pitem_target=libdl.a
+    local pitem_install=$GLOBALDIR/lib/libdl.a
+    
+    config_proc(){
+        ./configure --prefix=$GLOBALDIR --libdir=$GLOBALDIR/lib --incdir=$GLOBALDIR/include --disable-shared --enable-static
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

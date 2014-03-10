@@ -1,0 +1,15 @@
+#!/bin/bash
+
+video_git_libbluray(){
+    local pitem_dir=libbluray.git
+    local pitem_file=libbluray.git
+    local pitem_url="git://git.videolan.org/libbluray.git"
+    local pitem_target=src/.libs/libbluray.a
+    local pitem_install=$LOCALDIR/lib/libbluray.a
+
+    config_proc(){
+        ./bootstrap
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared --enable-static
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

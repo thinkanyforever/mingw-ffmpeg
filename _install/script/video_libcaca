@@ -1,0 +1,19 @@
+#!/bin/bash
+
+video_libcaca(){
+    local pitem_dir=libcaca-0.99.beta18
+    local pitem_file=libcaca-0.99.beta18.tar.gz
+    local pitem_url="http://caca.zoy.org/files/libcaca/libcaca-0.99.beta18.tar.gz"
+    local pitem_target=caca/.libs/libcaca.a
+    local pitem_install=$LOCALDIR/lib/libcaca.a
+
+    config_proc(){
+        cd caca
+        sed -i "s/__declspec(dllexport)//g" *.h
+        sed -i "s/__declspec(dllimport)//g" *.h 
+        cd ..
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared --disable-cxx --disable-csharp --disable-java --disable-python --disable-ruby --disable-imlib2 --disable-doc
+        sed -i 's/ln -sf/$(LN_S)/' "caca/Makefile" "cxx/Makefile" "doc/Makefile"
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

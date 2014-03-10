@@ -1,0 +1,18 @@
+#!/bin/bash
+
+proc_libfontconfig(){
+    local pitem_dir=fontconfig-2.10.2
+    local pitem_file=fontconfig-2.10.2.tar.gz
+    local pitem_url="http://www.freedesktop.org/software/fontconfig/release/fontconfig-2.10.2.tar.gz"
+    local pitem_target=src/.libs/libfontconfig.a
+    local pitem_install=$GLOBALDIR/lib/libfontconfig.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-shared=no
+    }
+    install_proc(){
+        make install
+        sed -i 's/-L${libdir} -lfontconfig[^l]*$/-L${libdir} -lfontconfig -lfreetype -lexpat/' "$GLOBALDIR/lib/pkgconfig/fontconfig.pc"
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+}

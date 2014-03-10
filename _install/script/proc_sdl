@@ -1,0 +1,24 @@
+#!/bin/bash
+
+proc_sdl(){
+    local pitem_dir=SDL-1.2.15
+    local pitem_file=SDL-1.2.15.tar.gz
+    local pitem_url="http://www.libsdl.org/release/SDL-1.2.15.tar.gz"
+    local pitem_target=build/.libs/libSDL.a
+    local pitem_install=$GLOBALDIR/lib/libSDL.a
+
+    original_cflags=$CFLAGS
+    export CFLAGS="$original_cflags -DDECLSPEC="
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-shared=no
+    }
+    install_proc(){
+        make install
+        sed -i "s/-mwindows//" "$GLOBALDIR/bin/sdl-config"
+        sed -i "s/-mwindows//" "$GLOBALDIR/lib/pkgconfig/sdl.pc"
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+    
+    export CFLAGS=$original_cflags
+}

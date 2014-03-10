@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libvorbis(){
+    local pitem_dir=libvorbis-1.3.3
+    local pitem_file=libvorbis-1.3.3.tar.xz
+    local pitem_url="http://downloads.xiph.org/releases/vorbis/libvorbis-1.3.3.tar.xz"
+    local pitem_target=lib/.libs/libvorbis.a
+    local pitem_install=$LOCALDIR/lib/libvorbis.a
+
+    config_proc(){
+        ./configure --prefix=$LOCALDIR --enable-shared=no
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

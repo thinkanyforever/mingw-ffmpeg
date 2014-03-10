@@ -1,0 +1,37 @@
+#!/bin/bash
+
+video_libxvidcore(){
+    local pitem_dir=xvidcore
+    local pitem_file=xvidcore-1.3.2.tar.gz
+    local pitem_url="http://downloads.xvid.org/downloads/xvidcore-1.3.2.tar.gz"
+    local pitem_target=build/generic/=build/xvidcore.a
+    local pitem_install=$LOCALDIR/lib/libxvidcore.a
+
+    clean_proc(){
+        cd build/generic
+        make clean
+    }
+    config_proc(){
+        cd build/generic
+        local extra=''
+        if [[ $SYSBITS -eq 64 ]]; then 
+            extra='--build=x86_64-unknown-linux-gnu --disable-assembly'
+        fi
+        ./configure --host=$targetHost --prefix=$LOCALDIR $extra
+        sed -i "s/-mno-cygwin//" platform.inc
+    }
+    make_proc(){
+        cd build/generic
+        make -j $cpuCount
+    }
+    install_proc(){
+        cd build/generic
+        make install
+        if [[ -f "$LOCALDIR/lib/xvidcore.dll" ]]; then
+            rm $LOCALDIR/lib/xvidcore.dll || exit 1
+            mv $LOCALDIR/lib/xvidcore.a $LOCALDIR/lib/libxvidcore.a || exit 1
+        fi
+    }
+    do_proc_default clean_proc config_proc make_proc install_proc
+
+}

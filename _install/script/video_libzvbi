@@ -1,0 +1,23 @@
+#!/bin/bash
+
+video_libzvbi(){
+    local pitem_dir=zvbi-0.2.35
+    local pitem_file=zvbi-0.2.35.tar.bz2
+    local pitem_url="http://sourceforge.net/projects/zapping/files/zvbi/0.2.35/zvbi-0.2.35.tar.bz2/download"
+    local pitem_target=src/.libs/libzvbi.a
+    local pitem_install=$LOCALDIR/lib/libzvbi.a
+
+    do_download_package $package_dir/zvbi-win32.patch https://raw.github.com/jb-alvarado/media-autobuild_suite/master/patches/zvbi-win32.patch
+    do_download_package $package_dir/zvbi-ioctl.patch https://raw.github.com/jb-alvarado/media-autobuild_suite/master/patches/zvbi-ioctl.patch
+
+    config_proc(){
+        patch -p0 < $package_dir/zvbi-win32.patch
+        patch -p0 < $package_dir/zvbi-ioctl.patch
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared --disable-dvb --disable-bktr --disable-nls --disable-proxy --without-doxygen CFLAGS="$CFLAGS -DPTW32_STATIC_LIB" LIBS="$LIBS -lpng"
+    }
+    install_proc(){
+        make install
+        cp ../zvbi-0.2.pc $LOCALDIR/lib/pkgconfig
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+}

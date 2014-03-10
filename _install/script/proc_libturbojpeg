@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proc_libturbojpeg(){
+    local pitem_dir=libjpeg-turbo-1.3.0
+    local pitem_file=libjpeg-turbo-1.3.0.tar.gz
+    local pitem_url="http://sourceforge.net/projects/libjpeg-turbo/files/1.3.0/libjpeg-turbo-1.3.0.tar.gz/download"
+    local pitem_target=.libs/libturbojpeg.a
+    local pitem_install=$GLOBALDIR/lib/libturbojpeg.a
+    
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-shared=no
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

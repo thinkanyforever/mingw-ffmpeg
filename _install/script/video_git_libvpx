@@ -1,0 +1,23 @@
+#!/bin/bash
+
+video_git_libvpx(){
+    local pitem_dir=libvpx.git
+    local pitem_file=libvpx.git
+    local pitem_url="http://git.chromium.org/webm/libvpx.git"
+    local pitem_target=libvpx.a
+    local pitem_install=$LOCALDIR/lib/libvpx.a
+
+    config_proc(){
+        if [[ $SYSBITS -eq 64 ]]; then 
+            ./configure --target=x86_64-win64-gcc --prefix=$LOCALDIR --disable-shared --enable-static --disable-unit-tests --disable-docs
+            sed -i 's/HAVE_GNU_STRIP=yes/HAVE_GNU_STRIP=no/g' libs-x86_64-win64-gcc.mk
+        else
+            ./configure --prefix=$LOCALDIR --disable-shared --enable-static --disable-unit-tests --disable-docs
+            sed -i 's/HAVE_GNU_STRIP=yes/HAVE_GNU_STRIP=no/g' libs-x86-win32-gcc.mk
+        fi 
+        grep -q -e '#if defined(_WIN32) || defined(_WIN64)' vpx/src/svc_encodeframe.c || sed -i '/#include "vpx\/vpx_encoder.h"/ a\#if defined(_WIN32) || defined(_WIN64)\
+        #define strtok_r strtok_s\
+        #endif' vpx/src/svc_encodeframe.c
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

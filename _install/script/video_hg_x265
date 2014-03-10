@@ -1,0 +1,25 @@
+#!/bin/bash
+
+video_hg_x265(){
+    local pitem_dir=x265.hg
+    local pitem_file=x265.hg
+    local pitem_url="https://bitbucket.org/multicoreware/x265"
+    local pitem_target=libx265.a
+    local pitem_install=$LOCALDIR/lib/libx265.a
+
+    config_proc(){
+cat > toolchain.cmake << "EOF"
+SET(CMAKE_SYSTEM_NAME Windows)
+SET(CMAKE_C_COMPILER gcc -static-libgcc)
+SET(CMAKE_CXX_COMPILER g++ -static-libgcc)
+SET(CMAKE_RC_COMPILER windres)
+SET(CMAKE_ASM_YASM_COMPILER yasm)
+EOF
+        grep -q -e '#if defined(_WIN32) || defined(_WIN64)' source/common/param.cpp || sed -i '/#include <stdarg.h>/ a\#if defined(_WIN32) || defined(_WIN64)\
+        #define strtok_r strtok_s\
+        #endif' source/common/param.cpp
+        cmake -G "MSYS Makefiles" -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake -DCMAKE_INSTALL_PREFIX:PATH=$LOCALDIR source
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+
+}

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+proc_pthread(){
+    local pitem_dir=pthreads-w32-2-9-1-release
+    local pitem_file=pthreads-w32-2-9-1-release.tar.gz
+    local pitem_url="ftp://sourceware.org/pub/pthreads-win32/pthreads-w32-2-9-1-release.tar.gz"
+    local pitem_target=libpthreadGC2.a
+    local pitem_install=$GLOBALDIR/lib/libpthreadGC2.a
+    
+    make_proc(){
+        make clean GC-static
+    }
+    install_proc(){
+        cp libpthreadGC2.a $GLOBALDIR/lib/libpthreadGC2.a || exit 1
+        cp libpthreadGC2.a $GLOBALDIR/lib/libpthread.a || exit 1
+        cp pthread.h sched.h semaphore.h $GLOBALDIR/include || exit 1
+    }
+    do_proc_default do_clean_proc do_config_proc make_proc install_proc
+}

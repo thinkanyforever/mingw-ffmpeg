@@ -1,0 +1,27 @@
+#!/bin/bash
+
+proc_pkg_config(){
+    local pitem_dir=pkg-config-lite-0.28-1
+    local pitem_file=pkg-config-lite-0.28-1.tar.gz
+    local pitem_url="http://downloads.sourceforge.net/project/pkgconfiglite/0.28-1/pkg-config-lite-0.28-1.tar.gz"
+    local pitem_target=pkg-config.exe
+    local pitem_install=$GLOBALDIR/bin/pkg-config.exe
+    
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-shared=no --with-pc-path="$GLOBALDIR/lib/pkgconfig"
+    }
+    install_proc(){
+        make install
+        cat >  ${GLOBALDIR}/bin/pkg-config.sh << "EOF"
+#!/bin/sh
+if pkg-config "$@" > /dev/null 2>&1 ; then
+    res=true
+else
+    res=false
+fi
+pkg-config "$@" | tr -d \\r && $res
+EOF
+        chmod ugo+x ${GLOBALDIR}/bin/pkg-config.sh
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+}

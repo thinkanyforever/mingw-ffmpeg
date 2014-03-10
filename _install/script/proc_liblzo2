@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proc_liblzo2(){
+    local pitem_dir=lzo-2.06
+    local pitem_file=lzo-2.06.tar.gz
+    local pitem_url="http://www.oberhumer.com/opensource/lzo/download/lzo-2.06.tar.gz"
+    local pitem_target=src/.libs/liblzo2.a
+    local pitem_install=$GLOBALDIR/lib/liblzo2.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --disable-shared
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

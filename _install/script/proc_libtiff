@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proc_libtiff(){
+    local pitem_dir=tiff-4.0.3
+    local pitem_file=tiff-4.0.3.tar.gz
+    local pitem_url="ftp://ftp.remotesensing.org/pub/libtiff/tiff-4.0.3.tar.gz"
+    local pitem_target=libtiff/.libs/libtiff.a
+    local pitem_install=$GLOBALDIR/lib/libtiff.a
+    
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --disable-shared
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

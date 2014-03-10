@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libtwolame(){
+    local pitem_dir=twolame-0.3.13
+    local pitem_file=twolame-0.3.13.tar.gz
+    local pitem_url="http://sourceforge.net/projects/twolame/files/twolame/0.3.13/twolame-0.3.13.tar.gz/download"
+    local pitem_target=libtwolame/.libs/libtwolame.a
+    local pitem_install=$LOCALDIR/lib/libtwolame.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared CPPFLAGS="$CPPFLAGS -DLIBTWOLAME_STATIC"
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

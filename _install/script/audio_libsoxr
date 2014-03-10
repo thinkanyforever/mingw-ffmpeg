@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libsoxr(){
+    local pitem_dir=soxr-0.1.1-Source
+    local pitem_file=soxr-0.1.1-Source.tar.xz
+    local pitem_url="http://sourceforge.net/projects/soxr/files/soxr-0.1.1-Source.tar.xz"
+    local pitem_target=src/libsoxr.a
+    local pitem_install=$LOCALDIR/lib/libsoxr.a
+
+    config_proc(){
+        cmake -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$LOCALDIR -DHAVE_WORDS_BIGENDIAN_EXITCODE=0 -DBUILD_SHARED_LIBS:bool=off -DBUILD_TESTS:BOOL=OFF -DWITH_OPENMP:BOOL=OFF
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

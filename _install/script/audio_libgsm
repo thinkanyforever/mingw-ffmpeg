@@ -1,0 +1,16 @@
+#!/bin/bash
+
+audio_libgsm(){
+    local pitem_dir=gsm-1.0.13
+    local pitem_file=gsm-1.0.13.tar.bz2
+    local pitem_url="http://www.imagemagick.org/download/delegates/ffmpeg/gsm-1.0.13.tar.bz2"
+    local pitem_target=lib/libgsm.a
+    local pitem_install=$LOCALDIR/lib/libgsm.a
+
+    install_proc(){
+        mkdir $LOCALDIR/include/gsm
+        cp inc/gsm.h  $LOCALDIR/include/gsm
+        cp lib/libgsm.a $LOCALDIR/lib
+    }
+    do_proc_default do_clean_proc null_proc do_make_proc install_proc
+}

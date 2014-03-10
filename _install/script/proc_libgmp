@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proc_libgmp(){
+    local pitem_dir=gmp-5.1.3
+    local pitem_file=gmp-5.1.3.tar.bz2
+    local pitem_url="ftp://ftp.gnu.org/gnu/gmp/gmp-5.1.3.tar.bz2"
+    local pitem_target=.libs/libgmp.a
+    local pitem_install=$GLOBALDIR/lib/libgmp.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-cxx --disable-shared --with-gnu-ld
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

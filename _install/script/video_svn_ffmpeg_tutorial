@@ -1,0 +1,19 @@
+#!/bin/bash
+
+video_svn_ffmpeg_tutorial(){
+    local pitem_dir=ffmpeg_tutorial.svn
+    local pitem_file=ffmpeg_tutorial.svn
+    local pitem_url="https://github.com/chelyaev/ffmpeg-tutorial/trunk"
+    local pitem_target=bin/tutorial07.out
+    local pitem_install=$LOCALDIR/bin/ffmpeg_tutorial_07.exe
+    install_proc(){
+        cp bin/tutorial01.out $LOCALDIR/bin/ffmpeg_tutorial_01.exe
+        cp bin/tutorial02.out $LOCALDIR/bin/ffmpeg_tutorial_02.exe
+        cp bin/tutorial03.out $LOCALDIR/bin/ffmpeg_tutorial_03.exe
+        cp bin/tutorial04.out $LOCALDIR/bin/ffmpeg_tutorial_04.exe
+        cp bin/tutorial05.out $LOCALDIR/bin/ffmpeg_tutorial_05.exe
+        cp bin/tutorial06.out $LOCALDIR/bin/ffmpeg_tutorial_06.exe
+        cp bin/tutorial07.out $LOCALDIR/bin/ffmpeg_tutorial_07.exe
+    }
+    do_proc_default do_clean_proc null_proc do_make_proc install_proc
+}

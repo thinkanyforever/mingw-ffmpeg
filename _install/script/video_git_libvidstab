@@ -1,0 +1,15 @@
+#!/bin/bash
+
+video_git_libvidstab(){
+    local pitem_dir=libvidstab.git
+    local pitem_file=libvidstab.git
+    local pitem_url="https://github.com/georgmartius/vid.stab.git"
+    local pitem_target=libvidstab.a
+    local pitem_install=$LOCALDIR/lib/libvidstab.a
+
+    config_proc(){
+        cmake -G "MSYS Makefiles" -DCMAKE_INSTALL_PREFIX=$LOCALDIR
+        sed -i "s/SHARED/STATIC/" CMakeLists.txt
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

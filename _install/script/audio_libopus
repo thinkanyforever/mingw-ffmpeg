@@ -1,0 +1,16 @@
+#!/bin/bash
+
+audio_libopus(){
+    local pitem_dir=opus-1.0.3
+    local pitem_file=opus-1.0.3.tar.gz
+    local pitem_url="http://downloads.xiph.org/releases/opus/opus-1.0.3.tar.gz"
+    local pitem_target=.libs/libopus.a
+    local pitem_install=$LOCALDIR/lib/libopus.a
+
+    config_proc(){
+        sed -i "s/#error \"OPUS_BUILD/\/\/\"/" src/opus_decoder.c
+        ./configure --host=$targetHost --prefix=$LOCALDIR --enable-shared=no --enable-static --disable-doc
+        sed -i "s/#define OPUS_BUILD//" config.h
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+video_git_libdvdnav(){
+    local pitem_dir=libdvdnav.git
+    local pitem_file=libdvdnav.git
+    local pitem_url="git://git.videolan.org/libdvdnav.git"
+    local pitem_target=.libs/libdvdnav.a
+    local pitem_install=$LOCALDIR/lib/libdvdnav.a
+
+    config_proc(){
+        if [[ ! -f ./configure ]]; then
+            libtoolize --force
+            aclocal -I "$GLOBALDIR"/share/aclocal
+            autoheader
+            automake --force-missing --add-missing
+            autoconf
+        fi
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared --with-dvdread-config=$LOCALDIR/bin/dvdread-config
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

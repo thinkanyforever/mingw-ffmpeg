@@ -1,0 +1,26 @@
+#!/bin/bash
+
+audio_git_fdk_aac(){
+    local pitem_dir=fdk_aac.git
+    local pitem_file=fdk_aac.git
+    local pitem_url=" https://github.com/mstorsjo/fdk-aac.git"
+    local pitem_target=libfdk-aac.a
+    local pitem_install=$LOCALDIR/lib/libfdk-aac.a
+
+    do_download_package     $package_dir/fdkaac-autobuild.git https://github.com/nu774/fdkaac_autobuild.git
+
+    config_proc(){
+        cp $package_dir/fdkaac-autobuild.git/files/LibMakefile Makefile
+        cp $package_dir/fdkaac-autobuild.git/files/libfdk-aac.version libfdk-aac.version
+        safe_pattern=$(printf '%s\n' "$LOCALDIR" | sed 's/[\&/]/\\&/g')
+        sed -i 's/PREFIX=\/mingw/PREFIX='"$safe_pattern"'/g' Makefile
+        sed -i 's/cd stage && zip -r $(PREFIX)\/libfdk-aac-win32-bin.zip \* \& cd \.\.//g' Makefile
+    }
+    install_proc(){
+        make install
+        cp libfdk-aac.a $LOCALDIR/lib/libfdk-aac.a
+        rm $LOCALDIR/bin/libfdk-aac-0.dll
+        rm $LOCALDIR/lib/libfdk-aac.dll.a
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+}

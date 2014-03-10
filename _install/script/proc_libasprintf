@@ -1,0 +1,41 @@
+#!/bin/bash
+
+proc_libasprintf(){
+    local pitem_dir=libasprintf
+    local pitem_file=gettext-0.18.3.1.tar.gz
+    local pitem_url="http://ftp.gnu.org/pub/gnu/gettext/gettext-0.18.3.1.tar.gz"
+    local pitem_target=gettext-0.18.3.1/gettext-runtime/libasprintf/.libs/libasprintf.a
+    local pitem_install=$GLOBALDIR/lib/libasprintf.a
+
+    do_download_package     $package_dir/$pitem_file $pitem_url
+    do_remove_dir           $BUILDDIR/$pitem_dir
+    if [ ! -d "$BUILDDIR/$pitem_dir/gettext-0.18.3.1" ]; then
+        func_extract $BUILDDIR/$pitem_dir $package_dir/$pitem_file
+    fi
+    func_check_dir          $BUILDDIR/$pitem_dir/gettext-0.18.3.1
+
+    clean_proc(){
+        cd $BUILDDIR/$pitem_dir/gettext-0.18.3.1/gettext-runtime
+        make clean
+    }
+    config_proc(){
+        cd $BUILDDIR/$pitem_dir/gettext-0.18.3.1
+        cat gettext-tools/woe32dll/gettextlib-exports.c | grep -v rpl_opt > gettext-tools/woe32dll/gettextlib-exports.c.new
+        mv gettext-tools/woe32dll/gettextlib-exports.c.new gettext-tools/woe32dll/gettextlib-exports.c
+        CFLAGS="$CFLAGS -O2" ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-threads=win32 --enable-relocatable LDFLAGS="$LDFLAGS -static -static-libgcc -DPTW32_STATIC_LIB" 
+    }
+    make_proc(){
+        cd $BUILDDIR/$pitem_dir/gettext-0.18.3.1/gettext-runtime
+        make -j $cpuCount
+    }
+    install_proc(){
+        cd $BUILDDIR/$pitem_dir/gettext-0.18.3.1/gettext-runtime
+        make install
+    }
+    local pclean=clean_proc
+    local pconfig=config_proc
+    local pbuild=make_proc
+    local pinstall=install_proc
+    cd "$BUILDDIR/$pitem_dir"
+    do_proc_default_build
+}

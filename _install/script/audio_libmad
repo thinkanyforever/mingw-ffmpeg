@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libmad(){
+    local pitem_dir=libmad-0.15.1b
+    local pitem_file=libmad-0.15.1b.tar.gz
+    local pitem_url="ftp://ftp.mars.org/pub/mpeg/libmad-0.15.1b.tar.gz"
+    local pitem_target=.libs/libmad.a
+    local pitem_install=$LOCALDIR/lib/libmad.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared --enable-fpm=intel --disable-debugging
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

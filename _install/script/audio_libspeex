@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libspeex(){
+    local pitem_dir=speex-1.2rc1
+    local pitem_file=speex-1.2rc1.tar.gz
+    local pitem_url="http://downloads.xiph.org/releases/speex/speex-1.2rc1.tar.gz"
+    local pitem_target=libspeex/.libs/libspeex.a
+    local pitem_install=$LOCALDIR/lib/libspeex.a
+
+    config_proc(){
+        ./configure --prefix=$LOCALDIR --enable-shared=no 
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

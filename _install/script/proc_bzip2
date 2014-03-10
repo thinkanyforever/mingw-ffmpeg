@@ -1,0 +1,17 @@
+#!/bin/bash
+
+proc_bzip2(){
+    local pitem_dir=bzip2-1.0.6
+    local pitem_file=bzip2-1.0.6.tar.gz
+    local pitem_url="http://bzip.org/1.0.6/bzip2-1.0.6.tar.gz"
+    local pitem_target=libbz2.a
+    local pitem_install=$GLOBALDIR/lib/libbz2.a
+    
+    install_proc(){
+        cp bzip2.exe $GLOBALDIR/bin/
+        cp bzip2recover.exe $GLOBALDIR/bin/
+        cp bzlib.h $GLOBALDIR/include/
+        cp libbz2.a $GLOBALDIR/lib
+    }
+    do_proc_default null_proc null_proc do_make_proc install_proc
+}

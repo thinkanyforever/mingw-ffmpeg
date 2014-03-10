@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_lame(){
+    local pitem_dir=lame-3.99.5
+    local pitem_file=lame-3.99.5.tar.gz
+    local pitem_url="http://sourceforge.net/projects/lame/files/lame/3.99/lame-3.99.5.tar.gz/download "
+    local pitem_target=libmp3lame/.libs/libmp3lame.a
+    local pitem_install=$LOCALDIR/lib/libmp3lame.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --enable-expopt=full --enable-shared=no
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

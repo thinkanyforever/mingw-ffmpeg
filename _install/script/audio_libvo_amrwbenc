@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libvo_amrwbenc(){
+    local pitem_dir=vo-amrwbenc-0.1.2
+    local pitem_file=vo-amrwbenc-0.1.2.tar.gz
+    local pitem_url="http://downloads.sourceforge.net/project/opencore-amr/vo-amrwbenc/vo-amrwbenc-0.1.2.tar.gz"
+    local pitem_target=.libs/libvo-amrwbenc.a
+    local pitem_install=$LOCALDIR/lib/libvo-amrwbenc.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --enable-shared=no
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+proc_liblua(){
+    local pitem_dir=lua-5.1.4
+    local pitem_file=lua-5.1.4.tar.gz
+    local pitem_url="http://www.lua.org/ftp/lua-5.1.4.tar.gz"
+    local pitem_target=src/lua51.dll
+    local pitem_install=$GLOBALDIR/bin/lua51.dll
+
+    config_proc(){
+        safe_pattern=$(printf '%s\n' "$GLOBALDIR" | sed 's/[\&/]/\\&/g')
+        sed -i 's/INSTALL_TOP= \/usr\/local/INSTALL_TOP= '"$safe_pattern"'\//' Makefile
+        sed -i 's/CC= gcc/local/CC= gcc -static-libgcc/' src/Makefile
+    }
+    make_proc(){
+        make mingw
+    }
+    install_proc(){
+        make install
+        cp src/lua51.dll $GLOBALDIR/bin
+    }
+    do_proc_default do_clean_proc config_proc make_proc install_proc
+}

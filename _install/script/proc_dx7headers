@@ -1,0 +1,18 @@
+#!/bin/bash
+
+proc_dx7headers(){
+    local pitem_dir=dx7headers
+    local pitem_file=dx7headers.tgz
+    local pitem_url="http://www.mplayerhq.hu/MPlayer/contrib/win32/dx7headers.tgz"
+    local pitem_install=$GLOBALDIR/include/d3dx.h
+    
+    do_download_package     $package_dir/$pitem_file $pitem_url
+    
+    if [ $reinstall -eq 1 ] || [ ! -f "$pitem_install" ] && [ $is_install -eq 1 ]; then
+        echo ------------- install "$package_name"
+        7za -y x $package_dir/$pitem_file
+        tar -C $GLOBALDIR/include -xf $pitem_dir.tar
+        rm $pitem_dir.tar
+        func_check_file $pitem_install
+    fi
+}

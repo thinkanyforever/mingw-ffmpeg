@@ -1,0 +1,15 @@
+#!/bin/bash
+
+proc_svn_libdca(){
+    local pitem_dir=libdca.svn
+    local pitem_file=libdca.svn
+    local pitem_url="svn://svn.videolan.org/libdca/trunk"
+    local pitem_target=libdca/.libs/libdca.a
+    local pitem_install=$GLOBALDIR/lib/libdca.a
+
+    config_proc(){
+        ./bootstrap
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --disable-shared
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

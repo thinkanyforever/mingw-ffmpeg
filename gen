@@ -1,0 +1,206 @@
+#!/bin/bash
+
+#------------------------------------------------
+# start options
+#------------------------------------------------
+cpuCount=1          # cpuCount for complete
+remoteUpdate=0      # update source for git & hg
+build=0             # (configure) make
+rebuild=0           # clean & configure & make
+fullbuild=0         # delete & extract source & configure & make
+install=0           # (configure & make) make install
+reinstall=0         # (make clean & configure & make ) make install
+fullinstall=0       # delete & extract source & configure & make & make install
+package=all         # set target package (default all)
+step=0              # run script one by one
+
+while true; do
+  case $1 in
+--cpuCount=* ) cpuCount="${1#*=}"; shift ;;
+--update=* ) update="${1#*=}"; shift ;;
+--build=* ) build="${1#*=}"; shift ;;
+--rebuild=* ) rebuild="${1#*=}"; shift ;;
+--fullbuild=* ) fullbuild="${1#*=}"; shift ;;
+--install=* ) install="${1#*=}"; shift ;;
+--reinstall=* ) reinstall="${1#*=}"; shift ;;
+--fullinstall=* ) fullinstall="${1#*=}"; shift ;;
+--package=* ) package="${1#*=}"; shift ;;
+--step=* ) package="${1#*=}"; shift ;;
+    -- ) shift; break ;;
+    -* ) echo "Error, unknown option: '$1'."; exit 1 ;;
+    * ) break ;;
+  esac
+done
+
+is_erase=0                  # is remove source dir
+is_build=0                  # is build source
+is_install=0                # is install target
+is_clean=0                  # is clean old target
+
+if [ $fullbuild -eq 1 ]; then
+    is_erase=1
+fi
+if [ $rebuild -eq 1 ]; then
+    is_clean=1
+fi
+if [ $build -eq 1 ] || [ $rebuild -eq 1 ] || [ $fullbuild -eq 1 ]; then
+    is_build=1
+fi
+if [ $install -eq 1 ] || [ $reinstall -eq 1 ] || [ $fullinstall -eq 1 ]; then
+    is_install=1
+    is_build=1
+    if [ $rebuild -eq 0 ] && [ $fullbuild -eq 0 ]; then
+        build=1
+    fi
+fi
+
+current_dir=$(cd $(dirname $0); pwd)
+cd $current_dir
+
+package_dir=$current_dir/_install/package #download package directory
+
+targetHost="i686-w64-mingw32"
+if [[ $SYSBITS -eq 64 ]];then
+    targetHost="x86_64-pc-mingw32"
+fi
+
+echo ------------------------------------------[ config start ]
+echo -e "System bits    \t:$SYSBITS"
+echo -e "Target host    \t:$targetHost"
+echo -e "Build  path    \t:$BUILDDIR"
+echo -e "Global path    \t:$GLOBALDIR"
+echo -e "Local  path    \t:$LOCALDIR"
+echo -e "Erase  source  \t:$is_erase"
+echo -e "Build  source  \t:$is_build"
+echo -e "Install target \t:$is_install"
+echo ------------------------------------------[ config done. ]
+
+#------------------------------------------------
+# gitconfig
+#------------------------------------------------
+if [ ! -f ".gitconfig" ]; then
+    echo ----------update gitconfig no autocrlf
+    grep -q -e 'autocrlf' .gitconfig || cat > .gitconfig << "EOF"
+[core]
+	autocrlf = false
+EOF
+fi
+
+source $current_dir/_install/script/_global_func
+
+do_proc_start() {
+    cd $current_dir
+    local package_name="$1"
+    if [ $step = 1 ];then
+        echo --------------------------------------------!questing
+        echo -- press entry to build [ $package_name ] or other key skip or esc exit
+        echo --------------------------------------------!questing
+        if [ "$key" != "" ];then
+            echo "exit in 5s"
+            sleep 5
+            exit
+        fi
+        echo -e "continue\n"
+    fi
+
+    local func_exist=0
+    func_exists $2 && func_exist=1
+    if [ $func_exist -eq 0 ];then
+        source "./_install/script/$2"
+        func_exists $2 && func_exist=1
+    fi
+    echo ------------- [ $package_name start ] -------------
+    echo -ne "\033]0;Mingw$SYSBITS $package_name\007"
+    if [ $func_exist -eq 1 ];then
+        $2
+    else
+        echo ------------- $package_name function "$2" not found
+    fi
+    echo ------------- [ $package_name done. ] -------------
+}
+
+##global
+
+do_proc_start "zlib" proc_zlib
+do_proc_start "bzip2" proc_bzip2
+do_proc_start "dlfcn" proc_dlfcn
+do_proc_start "pthread" proc_pthread
+do_proc_start "pkg-config" proc_pkg_config
+do_proc_start "libpng" proc_libpng
+do_proc_start "libjpeg" proc_libjpeg
+do_proc_start "libopenjpeg" proc_libopenjpeg
+do_proc_start "libturbojpeg" proc_libturbojpeg
+do_proc_start "libjasper" proc_libjasper
+do_proc_start "libtiff" proc_libtiff
+do_proc_start "dx7headers" proc_dx7headers
+do_proc_start "libiconv" proc_libiconv
+do_proc_start "libasprintf" proc_libasprintf
+do_proc_start "gettext" proc_gettext
+do_proc_start "libfreetype" proc_libfreetype
+do_proc_start "libexpat" proc_libexpat
+do_proc_start "libfontconfig" proc_libfontconfig
+do_proc_start "libfribidi" proc_libfribidi
+do_proc_start "sdl" proc_sdl
+do_proc_start "sdl_image" proc_sdl_image
+do_proc_start "libgmp" proc_libgmp
+do_proc_start "libnettle" proc_libnettle
+do_proc_start "libgpg_error" proc_libgpg_error
+do_proc_start "libgcrypt" proc_libgcrypt
+do_proc_start "libgnutls" proc_libgnutls
+do_proc_start "rtmpdump.git" proc_git_rtmpdump
+do_proc_start "liblzo2" proc_liblzo2
+do_proc_start "libdca.svn" proc_svn_libdca
+do_proc_start "libxml2" proc_libxml2
+do_proc_start "liblua" proc_liblua
+do_proc_start "libilbc.git" proc_git_libilbc
+
+##audio
+
+do_proc_start "libgsm" audio_libgsm
+do_proc_start "libogg" audio_libogg
+do_proc_start "libvorbis" audio_libvorbis
+do_proc_start "libtheora" audio_libtheora
+do_proc_start "libspeex" audio_libspeex
+do_proc_start "flac" audio_flac
+do_proc_start "lame" audio_lame
+do_proc_start "libvo_aacenc" audio_libvo_aacenc
+do_proc_start "libopencore_amrnb" audio_libopencore_amrnb
+do_proc_start "libvo_amrwbenc" audio_libvo_amrwbenc
+do_proc_start "fdk-aac.git" audio_git_fdk_aac
+do_proc_start "fdk-aac-bin.git" audio_git_fdk_aac_bin
+do_proc_start "faac" audio_faac
+do_proc_start "libopus" audio_libopus
+do_proc_start "libopus-tools" audio_libopus_tools
+do_proc_start "liba52" audio_liba52
+do_proc_start "libmad" audio_libmad
+do_proc_start "libsoxr" audio_libsoxr
+do_proc_start "libtwolame" audio_libtwolame
+do_proc_start "sox" audio_sox
+
+##video
+
+do_proc_start "x264.git" video_git_x264
+do_proc_start "x265.hg" video_hg_x265
+do_proc_start "libxvidcore" video_libxvidcore
+do_proc_start "libvpx.git" video_git_libvpx
+do_proc_start "libbluray.git" video_git_libbluray
+do_proc_start "libutvideo.git" video_git_libutvideo
+do_proc_start "libass" video_libass
+do_proc_start "libxavs.svn" video_svn_libxavs
+do_proc_start "libdvdcss" video_libdvdcss
+do_proc_start "libdvdread" video_git_libdvdread
+do_proc_start "libdvdnav" video_git_libdvdnav
+if [[ $SYSBITS -eq 32 ]]; then
+    #do_proc_start "mediainfo" video_mediainfo
+    :
+fi
+do_proc_start "libvidstab.git" video_git_libvidstab
+do_proc_start "libcaca" video_libcaca
+do_proc_start "libmodplug" video_libmodplug
+do_proc_start "orc" video_orc
+do_proc_start "libschroedinger" video_libschroedinger
+do_proc_start "libzvbi" video_libzvbi
+do_proc_start "frei0r" video_frei0r
+do_proc_start "mp4box" video_svn_mp4box
+do_proc_start "ffmpeg.git" video_git_ffmpeg
+do_proc_start "ffmpeg_tutorial.svn" video_svn_ffmpeg_tutorial

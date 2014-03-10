@@ -1,0 +1,20 @@
+#!/bin/bash
+
+proc_libopenjpeg(){
+    local pitem_dir=openjpeg_v1_4_sources_r697
+    local pitem_file=openjpeg_v1_4_sources_r697.tgz
+    local pitem_url="http://openjpeg.googlecode.com/files/openjpeg_v1_4_sources_r697.tgz"
+    local pitem_target=bin/libopenjpeg.a
+    local pitem_install=$GLOBALDIR/lib/libopenjpeg.a
+    
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-shared=no
+        safe_pattern=$(printf '%s\n' "$GLOBALDIR" | sed 's/[\&/]/\\&/g')
+        sed -i 's/\/usr\/lib/'"$safe_pattern"'\/lib/' Makefile
+    }
+    install_proc(){
+        make install
+        cp libopenjpeg.pc $GLOBALDIR/lib/pkgconfig
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+}

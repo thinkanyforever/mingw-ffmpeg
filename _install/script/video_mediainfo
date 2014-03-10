@@ -1,0 +1,37 @@
+#!/bin/bash
+
+video_mediainfo(){
+    local pitem_dir=MediaInfo_CLI_GNU_FromSource
+    local pitem_file=MediaInfo_CLI_GNU_FromSource.tar.bz2
+    local pitem_url="http://mediaarea.net/download/binary/mediainfo/0.7.67/MediaInfo_CLI_0.7.67_GNU_FromSource.tar.bz2"
+    local pitem_target=MediaInfo/Project/GNU/CLI/mediainfo.exe
+    local pitem_install=$LOCALDIR/lib/libmediainfo.a
+    
+    clean_proc(){
+        cd $BUILDDIR/$pitem_dir/ZenLib/Project/GNU/Library/
+        do_clean_proc
+        cd $BUILDDIR/$pitem_dir/MediaInfoLib/Project/GNU/Library/
+        do_clean_proc
+        cd $BUILDDIR/$pitem_dir/MediaInfo/Project/GNU/CLI/
+        do_clean_proc
+    }
+    make_proc(){
+        cd $BUILDDIR/$pitem_dir/ZenLib/Project/GNU/Library/
+        sed -i '/#include <windows.h>/ a\#include <time.h>' $BUILDDIR/$pitem_dir/ZenLib/Source/ZenLib/Ztring.cpp
+        ./configure --host=$targetHost
+        do_make_proc
+        cd $BUILDDIR/$pitem_dir/MediaInfoLib/Project/GNU/Library/
+        ./configure --host=$targetHost --prefix=$LOCALDIR
+        do_make_proc
+        cd $BUILDDIR/$pitem_dir/MediaInfo/Project/GNU/CLI/
+        ./configure --host=$targetHost --prefix=$LOCALDIR --enable-staticlibs --enable-shared=no LDFLAGS="$LDFLAGS -static-libgcc"
+        do_make_proc
+    }
+    install_proc(){
+        cd $BUILDDIR/$pitem_dir/MediaInfoLib/Project/GNU/Library/
+        do_install_proc
+        cd $BUILDDIR/$pitem_dir/MediaInfo/Project/GNU/CLI/
+        do_install_proc
+    }
+    do_proc_default clean_proc null_proc make_proc install_proc
+}

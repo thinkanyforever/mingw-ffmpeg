@@ -1,0 +1,215 @@
+#!/bin/bash
+
+#------------------------------------------------func_exists
+# check function exist
+# $1 function
+#------------------------------------------------
+func_exists() {
+    local function_name=$1
+    [ -z "$function_name" ] && return 1
+    declare -F "$function_name" > /dev/null 2>&1
+    return $?
+#or     compgen -A function $1 1>/dev/null
+#or     type $1 | head -1 | egrep "^$1.*function\$" >/dev/null 2>&1;
+}
+#------------------------------------------------func_download
+# download source package and save to path
+# $1 path eg:/tmp/zlib-1.2.8.tar.gz
+# $2 url   eg:http://www.zlib.net/zlib-1.2.8.tar.gz
+#------------------------------------------------
+func_download() {
+    local _path=$1
+    local _extension=${_path##*.}
+    case $_extension in 
+         git )
+            if [ ! -d "$1" ]; then
+                echo ------------- git clone [ "$1" ] form [ "$2" ]
+                git clone $2 $1
+            fi
+            func_check_dir "$1"
+            ;; 
+         hg )
+            if [ ! -d "$1" ]; then
+                echo ------------- hg clone [ "$1" ] form [ "$2" ]
+                hg clone $2 $1
+            fi
+            func_check_dir "$1"
+            ;; 
+         svn )
+            if [ ! -d "$1" ]; then
+                echo ------------- svn checkout [ "$1" ] form [ "$2" ]
+                svn checkout $2 $1
+            fi
+            func_check_dir "$1"
+            ;; 
+         *) #file
+            if [ ! -f "$1" ]; then
+                echo ------------- download [ "$1" ] form [ "$2" ]
+                wget -O $1 --no-check-certificate -c $2
+            fi
+            func_check_file "$1"
+            ;; 
+    esac
+}
+#------------------------------------------------func_extract
+# extract source to target dir
+# %1 targetpath     eg:/xxx
+# %2 packagename    eg:/pkg/zlib-1.2.8.tar.gz
+#------------------------------------------------
+func_extract() {
+    if [ ! -d "$1" ];then
+        mkdir $1
+    fi
+    _file=$2
+    _extension=${_file##*.}
+    case $_extension in 
+         gz | tgz | bz2 | xz)
+            echo ------------- use tar extract source $_file to "$1"
+            tar -C $1 -xf $_file
+            ;; 
+         zip )
+            echo ------------- use unzip extract source $_file to "$1"
+            unzip -n -d $1 $_file
+            ;; 
+         7z )
+            echo ------------- use 7za extract source $_file to "$1"
+            7za -y x $_file -o$1
+            ;; 
+         git | svn | hg ) # copy to only
+            echo ------------- copy source from $_file to "$1"
+            cp -rf $_file $1
+            ;; 
+         *) #default
+            ;; 
+    esac
+    func_check_dir "$1"
+}
+#------------------------------------------------func_check_file
+# check file exists
+# %1 targetfile
+#------------------------------------------------
+func_check_file() {
+	if [ ! -f "$1" ]; then
+		echo --------------------------------------------!error
+		echo "target file $1 not found"
+        echo "exit in 5s"
+        sleep 5
+        exit
+	fi
+}
+#------------------------------------------------func_check_dir
+# check source directory in /build32 or /build64
+# %1 targetdir
+#------------------------------------------------
+func_check_dir() {
+    if [ ! -d "$1" ]; then
+        echo --------------------------------------------!error
+		echo "target dir $1 not found"
+        echo "exit in 5s"
+        sleep 5
+        exit
+    fi
+}
+#------------------------------------------------do_remove_dir
+# remove dir
+# %1 targetdir
+#------------------------------------------------
+do_remove_dir() {
+    if [ $is_erase -eq 1 ]; then
+        if [ -d "$1" ]; then
+            echo ------------- remove dir "$1"
+            rm -rf "$1"
+        fi
+    fi
+}
+#------------------------------------------------do_download_package
+# extract package to dir
+# %1 targetdir
+# %1 package
+#------------------------------------------------
+do_download_package() {
+    if [ ! -f "$1" ]; then
+        func_download  $1 $2
+    fi
+}
+#------------------------------------------------do_extract_package
+# extract package to dir
+# %1 targetdir
+# %1 package
+#------------------------------------------------
+do_extract_package() {
+    if [ ! -d "$1/$2" ]; then
+        func_extract $1 $3
+    fi
+}
+#------------------------------------------------do_proc_default
+# extract package to dir
+# param default
+# local pitem_dir=zlib-1.2.8
+# local pitem_file=zlib-1.2.8.tar.gz
+# local pitem_url="http://www.zlib.net/zlib-1.2.8.tar.gz"
+# local pitem_target=libz.a
+# local pitem_install=$BUILDDIR/lib/libz.a
+#------------------------------------------------
+do_proc_default() {
+    
+    do_proc_default_extract
+    # build & install
+    
+    local pclean=$1
+    local pconfig=$2
+    local pbuild=$3
+    local pinstall=$4
+    
+    cd "$BUILDDIR/$pitem_dir"
+    do_proc_default_build
+}
+#------------------------------------------------ do_proc help function
+do_proc_default_extract(){
+    # download & extract
+    do_download_package     $package_dir/$pitem_file $pitem_url
+    do_remove_dir           $BUILDDIR/$pitem_dir
+    do_extract_package      $BUILDDIR $pitem_dir $package_dir/$pitem_file
+    func_check_dir          $BUILDDIR/$pitem_dir
+}
+do_proc_default_build(){
+    _pwd=`pwd`
+    if [ $is_clean -eq 1 ];then
+        echo ------------- clean "$package_name"
+        $pclean
+        cd $_pwd
+    fi
+    if [ $is_build -eq 1 ];then
+        if [ ! -f "tmplate_config_tag" ]; then
+            echo ------------- config "$package_name"
+            $pconfig
+            cd $_pwd
+            echo >tmplate_config_tag
+        fi
+        if [ $rebuild -eq 1 ] || [ ! -f "$pitem_target" ]; then
+            echo ------------- build "$package_name"
+            $pbuild
+            cd $_pwd
+        fi
+        func_check_file $BUILDDIR/$pitem_dir/$pitem_target
+    fi
+    if [ $reinstall -eq 1 ] || [ ! -f "$pitem_install" ] && [ $is_install -eq 1 ]; then
+        echo ------------- install "$package_name"
+        $pinstall
+        func_check_file $pitem_install
+        cd $_pwd
+    fi
+}
+null_proc(){
+    :
+}
+do_clean_proc(){
+    make clean
+}
+do_make_proc(){
+    make -j $cpuCount
+}
+do_install_proc(){
+    make install
+}
+#------------------------------------------------

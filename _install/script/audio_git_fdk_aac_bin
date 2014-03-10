@@ -1,0 +1,35 @@
+#!/bin/bash
+
+audio_git_fdk_aac_bin(){
+    local pitem_dir=fdk_aac_bin.git
+    local pitem_file=fdk_aac_bin.git
+    local pitem_url=" https://github.com/nu774/fdkaac.git"
+    local pitem_target=fdkaac.exe
+    local pitem_install=$LOCALDIR/bin/fdkaac.exe
+
+    do_download_package     $package_dir/fdkaac-autobuild.git https://github.com/nu774/fdkaac_autobuild.git
+
+    config_proc(){
+        cp $package_dir/fdkaac-autobuild.git/files/AppMakefile Makefile
+        cp $package_dir/fdkaac-autobuild.git/files/config.h config.h
+        safe_pattern=$(printf '%s\n' "$LOCALDIR" | sed 's/[\&/]/\\&/g')
+        sed -i 's/PREFIX=\/mingw/PREFIX='"$safe_pattern"'/g' Makefile
+        sed -i 's/-DHAVE_CONFIG_H -I\./-DHAVE_CONFIG_H -I\. -I$(PREFIX)\/include/g' Makefile
+        sed -i 's/$(CC) -o$@ $(OBJS) -static -lfdk-aac/$(CC) -o$@ $(OBJS) -L$(PREFIX)\/lib -static -lfdk-aac/g' Makefile
+    }
+    install_proc(){
+        make install
+        echo "prefix=$LOCALDIR" > $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "exec_prefix=$LOCALDIR" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "libdir=$LOCALDIR/lib" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "includedir=$LOCALDIR/include" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "Name: Fraunhofer FDK AAC Codec Library" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "Description: AAC codec library" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "Version: 0.3.0" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "Libs: -L\${libdir} -lfdk-aac" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "Libs.private: -lm" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+        echo "Cflags: -I${includedir}" >> $LOCALDIR/lib/pkgconfig/fdk-aac.pc
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+}

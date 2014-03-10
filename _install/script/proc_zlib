@@ -1,0 +1,39 @@
+#!/bin/bash
+
+proc_zlib(){
+    local pitem_dir=zlib-1.2.8
+    local pitem_file=zlib-1.2.8.tar.gz
+    local pitem_url="http://www.zlib.net/zlib-1.2.8.tar.gz"
+    local pitem_target=libz.a
+    local pitem_install=$GLOBALDIR/lib/libz.a
+    
+    clean_proc(){
+        make clean  -fMakefile.gcc
+    }
+    config_proc(){
+        sed 's/-O3/-O3 -mms-bitfields -mthreads/' win32/Makefile.gcc >Makefile.gcc
+    }
+    make_proc(){
+        make IMPLIB='libz.dll.a' -fMakefile.gcc
+    }
+    install_proc(){
+        install libz.a $GLOBALDIR/lib
+        install zlib.h $GLOBALDIR/include
+        install zconf.h $GLOBALDIR/include
+        
+        echo "prefix=$GLOBALDIR" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "exec_prefix=$GLOBALDIR" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "libdir=$GLOBALDIR/lib" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "sharedlibdir=$GLOBALDIR/lib" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "includedir=$GLOBALDIR/include" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "Name: zlib" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "Description: zlib compression library" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "Version: 1.2.8" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "Requires:" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "Libs: -L\${libdir} -L\${sharedlibdir} -lz" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+        echo "Cflags: -I${includedir}" >> $GLOBALDIR/lib/pkgconfig/zlib.pc
+    }
+    do_proc_default clean_proc config_proc make_proc install_proc
+}

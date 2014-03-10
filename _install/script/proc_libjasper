@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proc_libjasper(){
+    local pitem_dir=jasper-1.900.1
+    local pitem_file=jasper-1.900.1.zip
+    local pitem_url="http://www.ece.uvic.ca/~frodo/jasper/software/jasper-1.900.1.zip"
+    local pitem_target=src/libjasper/.libs/libjasper.a
+    local pitem_install=$GLOBALDIR/lib/libjasper.a
+    
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-static=no
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

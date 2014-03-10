@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proc_libxml2(){
+    local pitem_dir=libxml2-2.9.1
+    local pitem_file=libxml2-2.9.1.tar.gz
+    local pitem_url="ftp://xmlsoft.org/libxml2/libxml2-2.9.1.tar.gz"
+    local pitem_target=.libs/libxml2.a
+    local pitem_install=$GLOBALDIR/lib/libxml2.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --disable-shared --enable-static
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

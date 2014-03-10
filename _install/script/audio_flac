@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_flac(){
+    local pitem_dir=flac-1.3.0
+    local pitem_file=flac-1.3.0.tar.xz
+    local pitem_url="http://downloads.xiph.org/releases/flac/flac-1.3.0.tar.xz"
+    local pitem_target=src/libFLAC/.libs/libFLAC.a
+    local pitem_install=$LOCALDIR/lib/libFLAC.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-xmms-plugin --enable-shared=no --enable-static
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

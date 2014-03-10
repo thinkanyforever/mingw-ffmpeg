@@ -1,0 +1,14 @@
+#!/bin/bash
+
+video_svn_libxavs(){
+    local pitem_dir=libxavs.svn
+    local pitem_file=libxavs.svn
+    local pitem_url="https://svn.code.sf.net/p/xavs/code/trunk/"
+    local pitem_target=libxavs.a
+    local pitem_install=$LOCALDIR/lib/libxavs.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

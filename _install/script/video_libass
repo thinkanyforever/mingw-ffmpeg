@@ -1,0 +1,18 @@
+#!/bin/bash
+
+video_libass(){
+    local pitem_dir=libass-0.10.2
+    local pitem_file=libass-0.10.2.tar.gz
+    local pitem_url="http://libass.googlecode.com/files/libass-0.10.2.tar.gz"
+    local pitem_target=libass/.libs/libass.a
+    local pitem_install=$LOCALDIR/lib/libass.a
+
+    config_proc(){
+        CPPFLAGS=' -DFRIBIDI_ENTRY="" ' ./configure --host=$targetHost --prefix=$LOCALDIR --enable-shared=no
+    }
+    install_proc(){
+        make install
+        sed -i 's/-lass -lm/-lass -lfribidi -lm/' "$LOCALDIR/lib/pkgconfig/libass.pc"
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+}

@@ -1,0 +1,15 @@
+#!/bin/bash
+
+audio_faac(){
+    local pitem_dir=faac-1.28
+    local pitem_file=faac-1.28.tar.gz
+    local pitem_url="http://downloads.sourceforge.net/faac/faac-1.28.tar.gz"
+    local pitem_target=libfaac/.libs/libfaac.a
+    local pitem_install=$LOCALDIR/lib/libfaac.a
+
+    config_proc(){
+        ./bootstrap
+        ./configure --host=$targetHost --prefix=$LOCALDIR --enable-shared=no --without-mp4v2
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

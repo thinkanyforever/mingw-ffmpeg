@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proc_libnettle(){
+    local pitem_dir=nettle-2.7.1
+    local pitem_file=nettle-2.7.1.tar.gz
+    local pitem_url="http://ftp.gnu.org/gnu/nettle/nettle-2.7.1.tar.gz"
+    local pitem_target=libnettle.a
+    local pitem_install=$GLOBALDIR/lib/libnettle.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --disable-shared
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

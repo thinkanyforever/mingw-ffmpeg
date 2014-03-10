@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libogg(){
+    local pitem_dir=libogg-1.3.1
+    local pitem_file=libogg-1.3.1.tar.gz
+    local pitem_url="http://downloads.xiph.org/releases/ogg/libogg-1.3.1.tar.gz"
+    local pitem_target=src/.libs/libogg.a
+    local pitem_install=$LOCALDIR/lib/libogg.a
+
+    config_proc(){
+        ./configure --prefix=$LOCALDIR --enable-shared=no
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

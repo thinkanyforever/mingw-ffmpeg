@@ -1,0 +1,28 @@
+#!/bin/bash
+
+video_git_libdvdread(){
+    local pitem_dir=libdvdread.git
+    local pitem_file=libdvdread.git
+    local pitem_url="git://git.videolan.org/libdvdread.git"
+    local pitem_target=.libs/libdvdread.a
+    local pitem_install=$LOCALDIR/lib/libdvdread.a
+
+    config_proc(){
+        sed -i -e '/CC_CHECK_CFLAGS_APPEND/d' configure.ac
+        if [[ ! -f ./configure ]]; then
+            libtoolize --force
+            aclocal -I "$GLOBALDIR"/share/aclocal
+            autoheader
+            automake --force-missing --add-missing
+            autoconf
+        fi
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared CFLAGS="$CFLAGS -DHAVE_DVDCSS_DVDCSS_H" LDFLAGS="$LDFLAGS -ldvdcss"
+        sed -i 's/#define ATTRIBUTE_PACKED __attribute__ ((packed))/#define ATTRIBUTE_PACKED __attribute__ ((packed,gcc_struct))/' src/dvdread/ifo_types.h
+    }
+    install_proc(){
+        make install
+        sed -i "s/-ldvdread.*/-ldvdread -ldvdcss -ldl/" $LOCALDIR/bin/dvdread-config
+        sed -i 's/-ldvdread.*/-ldvdread -ldvdcss -ldl/' "$LOCALDIR/lib/pkgconfig/dvdread.pc"
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+}

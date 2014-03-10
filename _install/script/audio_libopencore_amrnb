@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_libopencore_amrnb(){
+    local pitem_dir=opencore-amr-0.1.3
+    local pitem_file=opencore-amr-0.1.3.tar.gz
+    local pitem_url="http://downloads.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-0.1.3.tar.gz"
+    local pitem_target=amrnb/.libs/libopencore-amrnb.a
+    local pitem_install=$LOCALDIR/lib/libopencore-amrnb.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --enable-shared=no
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

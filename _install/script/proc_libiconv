@@ -1,0 +1,14 @@
+#!/bin/bash
+
+proc_libiconv(){
+    local pitem_dir=libiconv-1.14
+    local pitem_file=libiconv-1.14.tar.gz
+    local pitem_url="http://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.14.tar.gz"
+    local pitem_target=lib/.libs/libiconv.a
+    local pitem_install=$GLOBALDIR/lib/libiconv.a
+    
+    config_proc(){
+        ./configure --prefix=$GLOBALDIR --enable-shared=no --enable-static=yes LDFLAGS="-L$GLOBALDIR/lib -mthreads -static -static-libgcc -static-libstdc++ -DPTW32_STATIC_LIB"
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

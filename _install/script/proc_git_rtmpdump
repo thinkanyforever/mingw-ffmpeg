@@ -1,0 +1,22 @@
+#!/bin/bash
+
+proc_git_rtmpdump(){
+    local pitem_dir=rtmpdump.git
+    local pitem_file=rtmpdump.git
+    local pitem_url="git://git.ffmpeg.org/rtmpdump"
+    local pitem_target=rtmpdump.exe
+    local pitem_install=$GLOBALDIR/bin/rtmpdump.exe
+
+    config_proc(){
+        sed -i 's/LIB_GNUTLS=.*/LIB_GNUTLS=-lgnutls -lhogweed -lnettle -lgmp -liconv $(LIBZ)/' Makefile
+        sed -i 's/LIBS_mingw=.*/LIBS_mingw=-lws2_32 -lwinmm -lgdi32 -lcrypt32 -lintl/' Makefile
+    }
+    make_proc(){
+        make LDFLAGS="$LDFLAGS" prefix=$GLOBALDIR CRYPTO=GNUTLS SHARED= SYS=mingw
+    }
+    install_proc(){
+        make LDFLAGS="$LDFLAGS" prefix=$GLOBALDIR CRYPTO=GNUTLS SHARED= SYS=mingw install
+        sed -i 's/Libs:.*/Libs: -L${libdir} -lrtmp -lwinmm -lz -lgmp -lintl/' $GLOBALDIR/lib/pkgconfig/librtmp.pc
+    }
+    do_proc_default do_clean_proc config_proc make_proc install_proc
+}

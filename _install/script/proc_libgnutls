@@ -1,0 +1,20 @@
+#!/bin/bash
+
+proc_libgnutls(){
+    local pitem_dir=gnutls-3.2.3
+    local pitem_file=gnutls-3.2.3.tar.xz
+    local pitem_url="ftp://ftp.gnutls.org/gcrypt/gnutls/v3.2/gnutls-3.2.3.tar.xz"
+    local pitem_target=lib/.libs/libgnutls.a
+    local pitem_install=$GLOBALDIR/lib/libgnutls.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$GLOBALDIR --enable-threads=win32 --disable-guile --disable-doc --disable-tests --disable-shared --with-gnu-ld
+    }
+    install_proc(){
+        make install
+        sed -i 's/-lgnutls *$/-lgnutls -lnettle -lhogweed -liconv -lcrypt32 -lws2_32 -lz -lgmp -lintl/' $GLOBALDIR/lib/pkgconfig/gnutls.pc
+        safe_pattern=$(printf '%s\n' "$GLOBALDIR" | sed 's/[\&/]/\\&/g')
+        sed -i 's/-L'"$safe_pattern"'\/lib .*/-L'"$safe_pattern"'\/lib/' $GLOBALDIR/lib/pkgconfig/gnutls.pc
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc install_proc
+}

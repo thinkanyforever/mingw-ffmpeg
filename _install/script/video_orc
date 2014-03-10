@@ -1,0 +1,14 @@
+#!/bin/bash
+
+video_orc(){
+    local pitem_dir=orc-0.4.18
+    local pitem_file=orc-0.4.18.tar.gz
+    local pitem_url="http://code.entropywave.com/download/orc/orc-0.4.18.tar.gz"
+    local pitem_target=orc/.libs/liborc-0.4.a
+    local pitem_install=$LOCALDIR/lib/liborc-0.4.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}

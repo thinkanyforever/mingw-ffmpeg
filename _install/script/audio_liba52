@@ -1,0 +1,14 @@
+#!/bin/bash
+
+audio_liba52(){
+    local pitem_dir=a52dec-0.7.4
+    local pitem_file=a52dec-0.7.4.tar.gz
+    local pitem_url="http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz"
+    local pitem_target=liba52/.libs/liba52.a
+    local pitem_install=$LOCALDIR/lib/liba52.a
+
+    config_proc(){
+        ./configure --host=$targetHost --prefix=$LOCALDIR --disable-shared
+    }
+    do_proc_default do_clean_proc config_proc do_make_proc do_install_proc
+}
