@@ -17,6 +17,7 @@ More
 - open file gen to see how to use step by step
 - create new script in _install/script directory
 - test on win7 x64 only
+
 References & Thanks to
 --------
 - https://github.com/rdp/ffmpeg-windows-build-helpers
@@ -25,4 +26,4 @@ References & Thanks to
 
 ? Questing
 -------- 
-- mailto:86287344@qq.com
+- 86287344@qq.com
